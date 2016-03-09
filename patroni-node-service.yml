@@ -7,8 +7,12 @@ metadata:
     role: node
 spec:
   ports:
-    - port: 5432
-    - port: 8001
+    - name: database-port
+      port: 5432
+      targetPort: 5432
+    - name: patroni-api
+      port: 8001
+      targetPort: 8001
   selector:
     app: patroni
     role: node

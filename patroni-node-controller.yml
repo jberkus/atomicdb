@@ -6,7 +6,7 @@ metadata:
     app: patroni
     role: node
 spec:
-  replicas: 4
+  replicas: 3
   selector:
     app: postgresql
     role: node
@@ -18,33 +18,22 @@ spec:
     spec:
         containers:
         - name: postgresql
-            image: jberkus/patroni-kube-node
-            ports:
-            - containerPort: 5432
-            - containerPort: 8001
-            command: [ "/bin/bash", "/patroni/scripts/entrypoint.sh" ]
-            env:
-            - name: CLUSTER
-              value: atomic01
-            - name: APIUSER
-              value: patroni
-            - name: APIPASS
-              value: patroni
-            - name: ETCD
-              value: 172.16.46.1
-            - name: REPUSER
-              value: replicator
-            - name: REPPASS
-              value: replicate
-            - name: SUPERNAME
-              value: patroni
-            - name: SUPERPASS
-              value: super
-            - name: ADMINUSER
-              value: admin
-            - name: ADMINPASS
-              value: admin
-            volumeMounts:
-            - mountPath: "/patroni"
-              name: patronicode
-              readOnly: true
+          image: jberkus/patroni-atomic
+          ports:
+          - name: database-port
+            containerPort: 5432
+          - name: patroni-api
+            containerPort: 8001
+          env:
+          - name: CLUSTER
+            value: atomic02
+          - name: APIUSER
+            value: patroni
+          - name: APIPASS
+            value: patroni
+          - name: ETCD
+            value: 172.31.43.178
+          - name: ADMINUSER
+            value: admin
+          - name: ADMINPASS
+            value: admin

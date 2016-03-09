@@ -44,6 +44,7 @@ postgresql:
   pgpass: /tmp/pgpass0
   initdb:
   - encoding: UTF8
+  - data-checksums
   create_replica_methods:
     - basebackup
   pg_hba:

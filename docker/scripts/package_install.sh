@@ -23,6 +23,7 @@ chown postgres:postgres /etc/ssl/certs/patroni.cert
 # put pg_ctl in postgres' path
 ln -s /usr/pgsql-9.5/bin/pg_ctl /usr/bin/
 ln -s /usr/pgsql-9.5/bin/pg_config /usr/bin/
+ln -s /usr/pgsql-9.5/bin/pg_controldata /usr/bin/
 
 #  install extensions
 #dnf -y -q install postgresql-${PGVER}-postgis-2.1 postgresql-${PGVER}-postgis-2.1-scripts
