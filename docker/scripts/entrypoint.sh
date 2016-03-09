@@ -6,12 +6,14 @@ if [ -z "${POD_IP}"]
 then
   echo "no pods\n"
   DOCKER_IP=$(hostname --ip-address)
-  NODE=$(hostname)
+  HNAME=$(hostname)
   echo "$DOCKER_IP $NODE"
 else
   DOCKER_IP=$($POD_IP)
-  NODE=$($POD_NAME)
+  HNAME=$($POD_NAME)
 fi
+
+NODE=${HNAME//[^a-z0-9]/_}
 
 # create patroni config
 cat > /etc/patroni/patroni.yml <<__EOF__

@@ -1,9 +1,9 @@
 apiversion: v1
 kind: Service
 metadata:
-  name: patroni
+  name: postgresql
   labels:
-    app: patroni
+    app: postgresql
     role: node
 spec:
   ports:
@@ -14,5 +14,5 @@ spec:
       port: 8001
       targetPort: 8001
   selector:
-    app: patroni
+    app: postgresql
     role: node
