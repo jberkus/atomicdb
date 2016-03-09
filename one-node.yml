@@ -6,16 +6,16 @@ metadata:
     app: postgresql
 spec:
   volumes:
-  - name: patronicode
-    hostPath: 
-      path: "/home/fedora/patroni-compose"
+  - name: dbvol
+    hostPath:
+      path: "/var/pgdata/"
   containers:
   - name: postgresql
-    image: jberkus/patroni-node
+    image: jberkus/patroni-atomic
     ports:
     - containerPort: 5432
     - containerPort: 8001
-    command: [ "/bin/bash", "/patroni/scripts/entrypoint.sh" ]
+    command: [ "/bin/bash", "/scripts/entrypoint.sh" ]
     env:
     - name: CLUSTER
       value: atomic01
@@ -24,20 +24,14 @@ spec:
     - name: APIPASS
       value: patroni
     - name: ETCD
-      value: 172.16.46.1
-    - name: REPUSER
-      value: replicator
-    - name: REPPASS
-      value: replicate
-    - name: SUPERNAME
-      value: patroni
-    - name: SUPERPASS
-      value: super
+      value: 172.31.43.178
     - name: ADMINUSER
       value: admin
     - name: ADMINPASS
       value: admin
+    - name: PGVERSION
+      value: "9.5"
     volumeMounts:
-    - mountPath: "/patroni"
-      name: patronicode
-      readOnly: true
+    - mountPath: "/pgdata/data"
+      name: dbvol
+      readOnly: false

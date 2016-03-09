@@ -1,0 +1,14 @@
+apiversion: v1
+kind: Service
+metadata:
+  name: patroni
+  labels:
+    app: patroni
+    role: node
+spec:
+  ports:
+    - port: 5432
+    - port: 8001
+  selector:
+    app: patroni
+    role: node

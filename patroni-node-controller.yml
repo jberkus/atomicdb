@@ -1,0 +1,50 @@
+kind: ReplicationController
+apiversion: v1
+metadata:
+  name: patroni
+  labels:
+    app: patroni
+    role: node
+spec:
+  replicas: 4
+  selector:
+    app: postgresql
+    role: node
+  template:
+    metadata:
+        labels:
+            app: postgresql
+            role: node
+    spec:
+        containers:
+        - name: postgresql
+            image: jberkus/patroni-kube-node
+            ports:
+            - containerPort: 5432
+            - containerPort: 8001
+            command: [ "/bin/bash", "/patroni/scripts/entrypoint.sh" ]
+            env:
+            - name: CLUSTER
+              value: atomic01
+            - name: APIUSER
+              value: patroni
+            - name: APIPASS
+              value: patroni
+            - name: ETCD
+              value: 172.16.46.1
+            - name: REPUSER
+              value: replicator
+            - name: REPPASS
+              value: replicate
+            - name: SUPERNAME
+              value: patroni
+            - name: SUPERPASS
+              value: super
+            - name: ADMINUSER
+              value: admin
+            - name: ADMINPASS
+              value: admin
+            volumeMounts:
+            - mountPath: "/patroni"
+              name: patronicode
+              readOnly: true

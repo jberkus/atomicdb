@@ -1,9 +1,19 @@
 #!/bin/bash
 
-DOCKER_IP=$(hostname --ip-address)
-NODE=$(hostname)
+# if in a pod, set IP to the pod IP, otherwise
+# set it to the hostname
+if [ -z "${POD_IP}"]
+then
+  echo "no pods\n"
+  DOCKER_IP=$(hostname --ip-address)
+  NODE=$(hostname)
+  echo "$DOCKER_IP $NODE"
+else
+  DOCKER_IP=$($POD_IP)
+  NODE=$($POD_NAME)
+fi
 
-
+# create patroni config
 cat > /etc/patroni/patroni.yml <<__EOF__
 
 scope: &scope ${CLUSTER}
@@ -13,21 +23,27 @@ restapi:
   listen: ${DOCKER_IP}:8001
   connect_address: ${DOCKER_IP}:8001
   auth: '${APIUSER}:${APIPASS}'
-  certfile: /etc/ssl/certs/ssl-cert-snakeoil.pem
-  keyfile: /etc/ssl/private/ssl-cert-snakeoil.key
+  certfile: /etc/ssl/certs/patroni.cert
+  keyfile: /etc/ssl/certs/patroni.cert
 etcd:
   scope: *scope
   ttl: *ttl
   host: ${ETCD}:2379
+tags:
+  nofailover: False
+  noloadbalance: False
+  clonefrom: False
 postgresql:
   name: ${NODE}
   scope: *scope
   listen: 0.0.0.0:5432
   connect_address: ${DOCKER_IP}:5432
   data_dir: /pgdata/data
-  maximum_lag_on_failover: 10485760 # 10 megabyte in bytes
+  maximum_lag_on_failover: 104857600 # 100 megabyte in bytes
   use_slots: True
   pgpass: /tmp/pgpass0
+  initdb:
+  - encoding: UTF8
   create_replica_methods:
     - basebackup
   pg_hba:
@@ -35,12 +51,15 @@ postgresql:
   - host all all 0.0.0.0/0 md5
   - hostssl all all 0.0.0.0/0 md5
   replication:
-    username: ${REPUSER}
-    password: ${REPPASS}
+    username: ${ADMINUSER}
+    password: ${ADMINPASS}
     network:  ${DOCKER_IP}/16
+  pg_rewind:
+    username: ${ADMINUSER}
+    password: ${ADMINPASS}
   superuser:
-    username: ${SUPERNAME}
-    password: ${SUPERPASS}
+    username: ${ADMINUSER}
+    password: ${ADMINPASS}
   admin:
     username: ${ADMINUSER}
     password: ${ADMINPASS}
@@ -52,6 +71,7 @@ postgresql:
     hot_standby: "on"
 __EOF__
 
+# do 9.3 compatibility which removes replication slots
 if [ "${PGVERSION}" = "9.3" ]
 then
     cat >> /etc/patroni/patroni.yml <<__EOF__
@@ -67,4 +87,3 @@ fi
 cat /etc/patroni/patroni.yml
 
 exec python /patroni/patroni.py /etc/patroni/patroni.yml
-
