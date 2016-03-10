@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pgreadproxy
+  labels:
+    app: pgbouncer-readonly
+spec:
+  containers:
+  - name: pgboucer-readonly
+    image: jberkus/pgbouncer-readproxy
+    ports:
+    - containerPort: 6432
+      hostPort: 6432
+    command: [ "/bin/bash", "/scripts/entrypoint.sh" ]
