@@ -2,16 +2,13 @@
 # patroni nodes.  It is designed to use kubernetes to support
 # multiple nodes
 
-FROM fedora:23
+FROM fedora:24
 
 ADD ./scripts/ /scripts/
 ADD ./patroni/ /patroni/
 
 RUN /scripts/package_install.sh
 
-RUN /scripts/file_setup.sh
-
-EXPOSE 8001 5432
+EXPOSE 8008 5432
 
 ENTRYPOINT ["/bin/bash", "/scripts/entrypoint.sh"]
-USER postgres

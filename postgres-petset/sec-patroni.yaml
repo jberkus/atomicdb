@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: patroni
+  labels:
+    component: patroni-patroni
+type: Opaque
+data:
+  password-superuser: YXRvbWlj
+  password-admin: YXRvbWlj
+  password-standby: YXRvbWlj

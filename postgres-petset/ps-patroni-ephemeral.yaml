@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: patroni
+  labels:
+    component: patroni-client
+spec:
+  selector:
+    component: patroni-patroni
+  ports:
+  - port: 5432
+  clusterIP: none
+
+---
+
+apiVersion: apps/v1alpha1
+kind: PetSet
+metadata:
+  name: patroni
+  labels:
+    component: patroni-patroni
+spec:
+  serviceName: patroni
+  replicas: 3
+  template:
+    metadata:
+      name: patroni
+      labels:
+        component: patroni-patroni
+      annotations:
+        pod.alpha.kubernetes.io/initialized: "true"
+    spec:
+      containers:
+      - name: patroni
+        image: jberkus/patroni:5.7
+        env:
+        - name: CLUSTERNAME
+          value: patroni01
+        - name: POD_GROUP
+          value: patroni
+        - name: SUPERPASS
+          valueFrom:
+            secretKeyRef:
+              name: patroni
+              key: password-superuser
+        - name: ADMINPASS
+          valueFrom:
+            secretKeyRef:
+              name: patroni
+              key: password-admin
+        - name: REPLICATIONPASS
+          valueFrom:
+            secretKeyRef:
+              name: patroni
+              key: password-standby
+        - name: POD_NS
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: ETCD_HOST
+          value: etcd.$(POD_NS).svc.cluster.local
+        ports:
+        - containerPort: 8008
+        - containerPort: 5432
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        volumeMounts:
+        - name: pgdata
+          mountPath: /pgdata
+        - mountPath: /tmp/patroni
+          name: patroni-config
+          readOnly: true
+      volumes:
+      - name: patroni-config
+        secret:
+          secretName: patroni
+      - name: pgdata
+        emptyDir: {}

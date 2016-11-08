@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: patroni
+  labels:
+    component: patroni-patroni
+spec:
+  selector:
+    component: patroni-patroni
+    patroni-role: master
+  ports:
+  - port: 5432

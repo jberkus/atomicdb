@@ -29,5 +29,7 @@ log_connections = 0
 log_disconnections = 0
 __EOF__
 
+cat /etc/pgbouncer/pgbouncer.ini
+
 # start pgbouncer
 pgbouncer -u pgbouncer /etc/pgbouncer/pgbouncer.ini

@@ -2,7 +2,7 @@
 
 # setup dnf to pull PostgreSQL from yum.postgresql.org
 #dnf -y -q install https://download.postgresql.org/pub/repos/yum/9.5/fedora/fedora-23-x86_64/pgdg-fedora95-9.5-3.noarch.rpm
-rpm -i /scripts/pgdg-fedora95-9.5-3.noarch.rpm
+rpm -i https://download.postgresql.org/pub/repos/yum/9.5/fedora/fedora-24-x86_64/pgdg-fedora95-9.5-4.noarch.rpm
 
 # install some basics
 dnf -y -q install readline-devel
@@ -47,3 +47,6 @@ pip install -r /scripts/requirements-py2.txt
 # install patroni.  commented out for testing
 cd /patroni
 python setup.py install
+
+# clean up dnf cache to shrink image
+dnf clean dbcache

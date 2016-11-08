@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgread
+  labels:
+    component: patroni-patroni
+spec:
+  selector:
+    component: patroni-patroni
+  ports:
+  - port: 5433

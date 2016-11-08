@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd
+  labels:
+    app: etcd
+spec:
+  ports:
+    - name: peer
+      port: 2380
+    - name: client
+      port: 2379
+  clusterIP: None
+  selector:
+    app: etcd
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: etcd
+data:
+  token: ZXRjZGNsdXN0ZXI=
+
+---
+
+apiVersion: apps/v1alpha1
+kind: PetSet
+metadata:
+  name: etcd
+spec:
+  serviceName: "etcd"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: etcd
+      annotations:
+        pod.alpha.kubernetes.io/initialized: "true"
+    spec:
+      containers:
+        - name: etcd
+          image: quay.io/coreos/etcd:v3.0.14
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POD_NS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: ETCD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ETCD_INITIAL_CLUSTER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: etcd
+                  key: token
+            - name: ETCD_DATA_DIR
+              value: "/data/etcd"
+            - name: ETCD_INITIAL_CLUSTER
+              value: "etcd-0=http://etcd-0.etcd.$(POD_NS).svc.cluster.local:2380,etcd-1=http://etcd-1.etcd.$(POD_NS).svc.cluster.local:2380,etcd-2=http://etcd-2.etcd.$(POD_NS).svc.cluster.local:2380"
+            - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+              value: "http://$(ETCD_NAME).etcd.$(POD_NS).svc.cluster.local:2380"
+            - name: ETCD_LISTEN_PEER_URLS
+              value: "http://$(POD_IP):2380"
+            - name: ETCD_LISTEN_CLIENT_URLS
+              value: "http://$(POD_IP):2379"
+            - name: ETCD_ADVERTISE_CLIENT_URLS
+              value: "http://$(ETCD_NAME).etcd.$(POD_NS).svc.cluster.local:2379"
+          ports:
+            - name: peer
+              containerPort: 2380
+            - name: client
+              containerPort: 2379
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          emptyDir: {}
