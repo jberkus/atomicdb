@@ -1,7 +1,0 @@
-#cloud-config
-password: atomic
-ssh_pwauth: True
-chpasswd: { expire: False }
-
-ssh_authorized_keys:
-  - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAyPkbombKphUtdiyJIv0RCj9eKGxas7J4QQMMA6sK4CxVQuw3Xps56xeQX19bsfOgGIAjLvB0uUJ9t3Sl0l/ZoOmAVuFlsNkBV6j9+jj3iCrn9zJP/oJRmZquROz2VSXLmqyJinW278ZKws+/VJKJDSMAiXXystbb/BgLst8w21YdJA5ti/GTUdozLkR1ljLu/EY5tp4nazs3/KCEn68eOMDleSPGj430GR3d6OvH1QGsPiaaEzoG87aOJVD5/oT5MFUUolhJI4rhJno42Up0uDgRLvAGyjf7fmTA4YlL2/HEb+0CckazgWulmoVv86vjHvPJJfg7EQvhDRe5qdYJnw== josh@josh-berkuss-macbook.local

@@ -8,4 +8,4 @@ spec:
   selector:
     component: patroni-patroni
   ports:
-  - port: 5433
+  - port: 5432
