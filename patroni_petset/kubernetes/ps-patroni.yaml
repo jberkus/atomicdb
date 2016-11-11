@@ -1,3 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: patroni
+  labels:
+    component: patroni-client
+spec:
+  selector:
+    component: patroni-patroni
+  ports:
+  - port: 5432
+  clusterIP: None
+
+---
+
 apiVersion: apps/v1alpha1
 kind: PetSet
 metadata:
@@ -5,7 +20,7 @@ metadata:
   labels:
     component: patroni-patroni
 spec:
-  serviceName:
+  serviceName: patroni
   replicas: 3
   template:
     metadata:
@@ -16,37 +31,45 @@ spec:
         pod.alpha.kubernetes.io/initialized: "true"
     spec:
       containers:
-      - name: spilo
-        image: registry.opensource.zalan.do/acid/spilo-9.5:1.1-p5
+      - name: patroni
+        image: jberkus/patroni:5.7
         env:
-        - name: PGPASSWORD_SUPERUSER
+        - name: CLUSTERNAME
+          value: patroni01
+        - name: POD_GROUP
+          value: patroni
+        - name: SUPERPASS
           valueFrom:
             secretKeyRef:
               name: patroni
               key: password-superuser
-        - name: PGPASSWORD_ADMIN
+        - name: ADMINPASS
           valueFrom:
             secretKeyRef:
               name: patroni
               key: password-admin
-        - name: PGPASSWORD_STANDBY
+        - name: REPLICATIONPASS
           valueFrom:
             secretKeyRef:
               name: patroni
               key: password-standby
-        - name: ETCD_DISCOVERY_DOMAIN
-          value: etcd-client.svc.cluster.local
-        - name: SCOPE
-          value: cluster01
-        - name: USE_WALE
-          value: "false"
-        - name: PGROOT
-          value: /home/postgres/pgdata/pgroot
-        - name: POD_NAMESPACE
+        - name: POD_NS
           valueFrom:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: ETCD_HOST
+          value: etcd.$(POD_NS).svc.cluster.local
         ports:
         - containerPort: 8008
         - containerPort: 5432
@@ -56,8 +79,8 @@ spec:
             memory: 256Mi
         volumeMounts:
         - name: pgdata
-          mountPath: /home/postgres/pgdata
-        - mountPath: /etc/patroni
+          mountPath: /pgdata
+        - mountPath: /tmp/patroni
           name: patroni-config
           readOnly: true
       volumes:
@@ -73,4 +96,4 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 4Gi
+          storage: 25Gi
