@@ -1,9 +1,9 @@
 # CitusDB StatefulSet Implementation
 
-This is a simplified, demo implementation of CitusDB clustered database
-deployment using [Kubernetes PetSet/StatefulSet]().  
+This is a simplified, demo implementation of [CitusDB clustered database](http://docs.citusdata.com/)
+deployment using [Kubernetes PetSet/StatefulSet](http://kubernetes.io/docs/user-guide/petset/).  
 It is not a production implementation at this time.  Rather, this is a demo
-and a prototype for developing a production [Helm chart]() for
+and a prototype for developing a production [Helm chart](https://github.com/kubernetes/charts) for
 CitusDB
 
 ## citus-docker

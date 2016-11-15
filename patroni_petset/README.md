@@ -1,9 +1,9 @@
 # Patroni PetSet Implementation
 
-This is a simplified, demo implementation of HA PostgreSQL using [Patroni]()
+This is a simplified, demo implementation of HA PostgreSQL using [Patroni](https://github.com/zalando/patroni/)
 and [Kubernetes PetSet]().  It is not a production implementation; for an
-example of a production implementation, see [Spilo]() and the
-[Helm Chart for Spilo and Patroni]().
+example of a production implementation, see [Spilo](https://github.com/zalando/spilo/tree/master/postgres-appliance) and the
+[Helm Chart for Spilo and Patroni](https://github.com/kubernetes/charts/tree/master/incubator/patroni).
 
 ## patroni-docker
 
