@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: patroni
+  name: citus
   labels:
-    component: patroni-client
+    component: citus
 spec:
   selector:
-    component: patroni-patroni
+    component: citus
   ports:
   - port: 5432
   clusterIP: None
@@ -16,44 +16,44 @@ spec:
 apiVersion: apps/v1alpha1
 kind: PetSet
 metadata:
-  name: patroni
+  name: citus
   labels:
-    component: patroni-patroni
+    component: citus
 spec:
-  serviceName: patroni
-  replicas: 3
+  serviceName: citus
+  replicas: 7
   template:
     metadata:
-      name: patroni
+      name: citus
       labels:
-        component: patroni-patroni
+        component: citus
       annotations:
         pod.alpha.kubernetes.io/initialized: "true"
     spec:
       containers:
-      - name: patroni
-        image: jberkus/patroni:5.7
+      - name: citus
+        image: jberkus/citus:0.9
         env:
-        - name: CLUSTERNAME
-          value: patroni01
         - name: POD_GROUP
-          value: patroni
+          value: citus
+        - name: SET_SIZE
+          value: "7"
         - name: SUPERPASS
           valueFrom:
             secretKeyRef:
-              name: patroni
+              name: citus
               key: password-superuser
         - name: ADMINPASS
           valueFrom:
             secretKeyRef:
-              name: patroni
+              name: citus
               key: password-admin
-        - name: REPLICATIONPASS
+        - name: REPPASS
           valueFrom:
             secretKeyRef:
-              name: patroni
+              name: citus
               key: password-standby
-        - name: POD_NS
+        - name: POD_NAMESPACE
           valueFrom:
             fieldRef:
               apiVersion: v1
@@ -70,17 +70,18 @@ spec:
               fieldPath: status.podIP
         - name: ETCD_HOST
           value: etcd.$(POD_NS).svc.cluster.local
+        - name: LANG
+          value: C.UTF8
         ports:
-        - containerPort: 8008
         - containerPort: 5432
         resources:
           requests:
             cpu: 100m
-            memory: 256Mi
+            memory: 512Mi
         volumeMounts:
         - name: pgdata
           mountPath: /pgdata
-        - mountPath: /tmp/patroni
+        - mountPath: /tmp/citus
           name: patroni-config
           readOnly: true
       volumes:

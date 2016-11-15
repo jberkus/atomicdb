@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: psql-client
+  namespace: default
+spec:
+  containers:
+  - image: jberkus/psql-client
+    command:
+      - sleep
+      - "3600"
+    name: psql-client

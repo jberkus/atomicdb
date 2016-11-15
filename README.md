@@ -11,3 +11,8 @@ This directory demonstrates building a high-availability single-master
 PostgreSQL cluster under Patroni, using Kubernetes StatefulSet (PetSet).
 
 See its README for more information.
+
+# citus_petset
+
+This directory contains a prototype of a CitusDB sharded database cluster under
+Kubernetes StatefulSet(PetSet).  See its README for more details.
