@@ -10,6 +10,6 @@ ADD ./scripts/ /scripts/
 
 RUN /scripts/package_install.sh
 
-EXPOSE 5000 5432 1234 1244 1245
+EXPOSE 5000 5432 1234 1244
 
 ENTRYPOINT ["/bin/bash", "/scripts/entrypoint.sh"]

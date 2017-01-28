@@ -27,14 +27,21 @@ First: create an etcd cluster using etcd.yaml or a similar profile.
 kubectl create -f etcd.yaml
 ```
 
-Second, create the PostgreSQL PetSet.  Depending on your setup, you can
+Second, create the secret for the PostgreSQL passwords.  You may want
+to replace the actual password; the ones given in the file are "atomic" for all users.
+
+```
+kubectl create -f sec-patroni.yaml
+```
+
+Third, create the PostgreSQL PetSet.  Depending on your setup, you can
 play with increasing the number of replicas:
 
 ```
 kubectl create -f ps-patroni-ephemeral
 ```
 
-Third, create the write and load-balanced read services:
+Finally, create the write and load-balanced read services:
 
 ```
 kubectl create -f svc-patroni-master
