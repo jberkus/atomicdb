@@ -5,6 +5,9 @@ PostgreSQL can be built out using Kubernetes and Docker (and run on
 Atomic Host!).  These are not production solutions, but rather
 intended to show off advances in Kubernetes and clustered PostgreSQL.
 
+Since all of the deployments in this repo rely heavily on StatefulSet, you
+need to use Kubernetes 1.5 or later.
+
 ## patroni_petset
 
 This directory demonstrates building a high-availability single-master
