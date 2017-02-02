@@ -3,7 +3,7 @@
 # setup dnf to pull PostgreSQL from yum.postgresql.org
 #dnf -y -q install https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-23-x86_64/pgdg-fedora96-9.6-3.noarch.rpm
 rpm -i https://download.postgresql.org/pub/repos/yum/9.6/fedora/fedora-24-x86_64/pgdg-fedora96-9.6-3.noarch.rpm
-# install citus repo
+# install citus repo for up-to-date citus
 cp /scripts/config_file.repo /etc/yum.repos.d/citus-community.repo
 
 # install some basics

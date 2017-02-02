@@ -26,7 +26,7 @@ data:
 ---
 
 apiVersion: apps/v1beta1
-kind: Statefu;Set
+kind: StatefulSet
 metadata:
   name: etcd
 spec:
