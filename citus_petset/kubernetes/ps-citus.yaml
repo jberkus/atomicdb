@@ -21,7 +21,6 @@ metadata:
     component: citus
 spec:
   serviceName: citus
-  replicas: 7
   template:
     metadata:
       name: citus
@@ -82,11 +81,11 @@ spec:
         - name: pgdata
           mountPath: /pgdata
         - mountPath: /tmp/citus
-          name: patroni-config
+          name: citus-config
           readOnly: true
       volumes:
-      - name: patroni-config
+      - name: citus-config
         secret:
-          secretName: patroni
+          secretName: citus
       - name: pgdata
         emptyDir: {}
