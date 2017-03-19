@@ -21,6 +21,7 @@ metadata:
     component: citus
 spec:
   serviceName: citus
+  replicas: 7
   template:
     metadata:
       name: citus

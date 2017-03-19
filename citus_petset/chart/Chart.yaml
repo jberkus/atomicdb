@@ -1,0 +1,10 @@
+name: citusdb
+description: "Sharded PostgreSQL supporting big data analytics workloads"
+version: 0.1.0
+home: https://github.com/jberkus/atomicdb
+sources:
+  - https://github.com/jberkus/atomicdb
+  - https://github.com/citusdata/citus
+maintainers:
+  - name: Josh berkus
+    email: josh@berkus.org
