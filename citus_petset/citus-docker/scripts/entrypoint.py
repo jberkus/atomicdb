@@ -65,6 +65,43 @@ def exec_check(cmd):
 
     logger.debug("executed command {0}".format(cmd))
 
+def connect_db(dbhost,dbname="template1"):
+    if dbhost == "localhost":
+        conn = psycopg2.connect("dbname={0}".format(dname))
+    else:
+        # poll connections in case the query node isn't up yet
+        conn = None
+        for poll in range(1,10):
+            try:
+                conn = psycopg2.connect("dbname={0} host={1} user=postgres".format(dbname, dbhost))
+                break
+            except:
+                sleep(5 * poll)
+    if conn is None:
+        raise Exception('Unable to reach the query node, failing startup')
+    conn.autocommit = True
+    return conn
+
+# function to get register node in all active databases
+def register_in_all_db(queryhost,shardname):
+    conn=connect_db(queryhost)
+    cur=conn.cursor()
+    # add/remove from template1
+    cur.execute("SELECT master_add_node(%s,5432)",(shardname,remove,))
+    # get list of databases
+    cur.execute("SELECT string_to_array(datname::TEXT) FROM pg_database WHERE datname NOT IN ('template1','template0')")
+    rows = cur.fetchall()
+    dblist = rows[0]
+    conn.close()
+    # loop over databases, registering in each
+    for dbname in dblist:
+        conn=connect_db(queryhost,dbname)
+        cur=conn.cursor()
+        cur.execute("SELECT citus_register_node(%s,5432)",(shardname))
+        conn.close()
+
+    return True
+
 # start postgresql
 exec_check(["/usr/bin/pg_ctl","-D","/pgdata/data","-w","start"])
 
@@ -93,7 +130,8 @@ if not os.path.exists('/pgdata/data/initialized'):
   cur.execute("CREATE EXTENSION citus")
   exec_check(["/usr/bin/psql","-f","/scripts/register_nodes.sql", "template1"])
 
-  # are we the first node?  if so, set nodes in template1
+  # are we the query node?  if so, set nodes in template1
+  # since we might be launching as a replacement
   if thisnode.endswith("-0"):
       pod_domain = "{0}.svc.cluster.local".format(os.getenv("POD_NAMESPACE", "default"))
       cur.execute("SELECT register_nodes(%s, %s, %s)",
@@ -104,6 +142,15 @@ if not os.path.exists('/pgdata/data/initialized'):
   cur.execute("CREATE DATABASE postgres")
   # create a "citusdb" database:
   cur.execute("CREATE DATABASE citusdb OWNER admin")
+  conn.close()
+
+  # are we a shard?  if so, poll the master for the list of databases
+  # and register this node in each one
+  if not thisnode.endswith("-0"):
+      pod_domain = "{0}.svc.cluster.local".format(os.getenv("POD_NAMESPACE", "default"))
+      master_uri = "{0}-0.{0}.{1}".format(os.genenv("POD_GROUP"),pod_domain)
+      thisnode_uri = "{0}.{1}.{2}".format(thisnode,os.getenv("POD_GROUP"),pod_domain)
+      register_in_all_db(master_uri,thisnode_uri)
 
   # set initialized key
   open("/pgdata/data/initialized", 'a').close()
