@@ -3,9 +3,9 @@ Name: citus
 Component: citus
 ImagePullPolicy: IfNotPresent
 
-# The image to use. Spilo is the dockerized Patroni
+# The image to use.
 Citus:
-  # this image was built from https://github.com/zalando/spilo/tree/master/postgres-appliance
+  # this image was built from https://github.com/jberkus/atomicdb/citus/citus-docker
   Image: jberkus/citus
   Version: 0.11
 
@@ -17,7 +17,7 @@ Replicas: 7
 Resources:
   Cpu: 100m
   Memory: 512Mi
-  Storage: 1Gi
+  Storage: 10Gi
 
 # Credentials used by Patroni
 # * more information: https://github.com/zalando/patroni/blob/master/docs/SETTINGS.rst#postgresql
