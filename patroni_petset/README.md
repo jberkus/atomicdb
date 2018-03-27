@@ -38,14 +38,14 @@ Third, create the PostgreSQL PetSet.  Depending on your setup, you can
 play with increasing the number of replicas:
 
 ```
-kubectl create -f ps-patroni-ephemeral
+kubectl create -f ps-patroni-ephemeral.yaml
 ```
 
 Finally, create the write and load-balanced read services:
 
 ```
-kubectl create -f svc-patroni-master
-kubectl create -f svc-patroni-read
+kubectl create -f svc-patroni-master.yaml
+kubectl create -f svc-patroni-read.yaml
 ```
 
 These services are currently internal-only using ClusterIP.  You can tinker
