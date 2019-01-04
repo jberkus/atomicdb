@@ -53,7 +53,7 @@ kubectl create -f ps-citus.yaml
 Third, create the query service:
 
 ```
-kubectl create -f svc-citus.yaml
+kubectl create -f svc-citus-query.yaml
 ```
 
 These services are currently internal-only using ClusterIP.  You can tinker
